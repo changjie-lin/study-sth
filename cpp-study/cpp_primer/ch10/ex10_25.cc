@@ -1,0 +1,77 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <functional>
+#include <string>
+
+using std::vector;
+using std::string;
+using std::cout;
+using std::endl;
+
+std::ostream &print(std::ostream &os, const vector<string> &vs) {
+	for (const auto &i : vs)
+		os << i << " ";
+	return os;
+}
+
+void elimDups(vector<string> &words) {
+	std::sort(words.begin(), words.end());
+	auto end_unique = std::unique(words.begin(), words.end());
+	words.erase(end_unique, words.end());
+}
+
+bool isShorter(const string &s1, const string &s2) {
+	return s1.size() < s2.size();
+}
+
+string make_plural(size_t count, const string &word, const string &suffix) {
+	string ret(word);
+	return (count > 1) ? (ret += suffix) : ret;
+}
+
+bool isNotGreater(const string str, const string::size_type len) {
+	return str.size() <= len;
+}
+
+bool check_size(const string &s, string::size_type sz) {
+	return s.size() >= sz;
+}
+
+void biggies(vector<string> &words, vector<string>::size_type sz) {
+
+	elimDups(words);
+/*
+	auto count = std::count_if(words.begin(), words.end(),
+	              [sz](const string &a)
+		       {return a.size() >= sz;});
+
+	auto wc = std::stable_partition(words.begin(), words.end(),
+			         [sz](const string &a)
+				      { return a.size() < sz;});
+*/
+
+	auto wc = std::stable_partition(words.begin(), words.end(),
+			std::bind(check_size, std::placeholders::_1, sz));
+	
+	// compute the number of elements with size <= sz
+	auto count = wc - words.begin();
+
+	cout << count << " " << make_plural(count, "word", "s")
+	     << " of length " << sz << " or longer" << endl;
+
+	// print words of the given size or less, each one followed by a space
+	for_each(words.begin(), wc,
+		 [](const string &s){cout << s << " ";});
+	cout << endl;
+	
+}
+
+int main() {
+	vector<string> words{"the", "quick", "red", "fox", "jumps", "over", "the",
+		"slow", "red", "turtle"};
+
+	biggies(words, 6);
+
+	return 0;
+}
