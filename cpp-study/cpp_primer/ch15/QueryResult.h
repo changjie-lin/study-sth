@@ -10,7 +10,7 @@
 
 
 class QueryResult {
-friend std::ostream& print(std::ostream&, const QueryResult&);
+	friend std::ostream& print(std::ostream&, const QueryResult&);
 public:
         QueryResult(const string& s,
                     std::shared_ptr<std::set<size_t>> p,
